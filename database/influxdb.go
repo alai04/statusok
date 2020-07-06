@@ -190,11 +190,11 @@ func (influxDb InfluxDb) GetMeanResponseTime(Url string, span int) (float64, err
 		val, err2 := row[1].(json.Number).Float64()
 		if err2 != nil {
 
-			fmt.Println(err)
+			fmt.Println(err2)
 			return 0, err2
 		}
 
-		fmt.Println("[%2d] %s: %03d\n", 1, t.Format(time.Stamp), val, err2)
+		fmt.Printf("[%2d] %s: %f\n", 1, t.Format(time.Stamp), val)
 		return val, nil
 	}
 	return 0, errors.New("error")

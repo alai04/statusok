@@ -54,7 +54,8 @@ type Database interface {
 }
 
 type DatabaseTypes struct {
-	InfluxDb InfluxDb `json:"influxDb"`
+	InfluxDb   InfluxDb    `json:"influxDb"`
+	Prometheus *Prometheus `json:"prometheus"`
 }
 
 //Intialize responseMean app and counts
@@ -78,16 +79,13 @@ func Initialize(ids map[int]int64, mMeanResponseCount int, mErrorCount int) {
 }
 
 //Add database to the database List
-func AddNew(databaseTypes DatabaseTypes) {
-
+func AddNew(databaseTypes DatabaseTypes) error {
+	dbList = nil
 	v := reflect.ValueOf(databaseTypes)
 
 	for i := 0; i < v.NumField(); i++ {
-		dbString := fmt.Sprint(v.Field(i).Interface().(Database))
-
-		//Check whether notify object is empty . if its not empty add to the list
-		if !isEmptyObject(dbString) {
-			dbList = append(dbList, v.Field(i).Interface().(Database))
+		if db, ok := v.Field(i).Interface().(Database); ok {
+			addNewOne(db)
 		}
 	}
 
@@ -102,7 +100,7 @@ func AddNew(databaseTypes DatabaseTypes) {
 
 		if initErr != nil {
 			println("Failed to Intialize Database ")
-			os.Exit(3)
+			return initErr
 		}
 
 	}
@@ -113,6 +111,16 @@ func AddNew(databaseTypes DatabaseTypes) {
 		addTestErrorAndRequestInfo()
 	} else {
 		fmt.Println("No Database selected.")
+	}
+	return nil
+}
+
+func addNewOne(db Database) {
+	dbString := fmt.Sprint(db)
+
+	//Check whether notify object is empty . if its not empty add to the list
+	if !isEmptyObject(dbString) {
+		dbList = append(dbList, db)
 	}
 }
 
@@ -229,6 +237,8 @@ func clearQueue(id int) {
 
 func isEmptyObject(objectString string) bool {
 
+	objectString = strings.Replace(objectString, "&", "", -1)
+	objectString = strings.Replace(objectString, "<nil>", "", -1)
 	objectString = strings.Replace(objectString, "0", "", -1)
 	objectString = strings.Replace(objectString, "map", "", -1)
 	objectString = strings.Replace(objectString, "[]", "", -1)
