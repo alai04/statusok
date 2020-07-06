@@ -10,6 +10,6 @@ require (
 	github.com/onsi/ginkgo v1.14.0 // indirect
 	github.com/prometheus/client_golang v1.0.0
 	github.com/sirupsen/logrus v1.6.0
-	github.com/urfave/cli v1.22.4
+	github.com/urfave/cli/v2 v2.2.0
 	gopkg.in/mailgun/mailgun-go.v1 v1.1.1
 )

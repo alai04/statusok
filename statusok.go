@@ -13,7 +13,7 @@ import (
 	"github.com/sanathp/statusok/database"
 	"github.com/sanathp/statusok/notify"
 	"github.com/sanathp/statusok/requests"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 type configParser struct {
@@ -38,19 +38,21 @@ func main() {
 	app.Usage = "Monitor your website.Get notifications when its down"
 
 	app.Flags = []cli.Flag{
-		cli.StringFlag{
-			Name:  "config",
-			Value: "config.json",
-			Usage: "location of config file",
+		&cli.StringFlag{
+			Name:    "config",
+			Aliases: []string{"c"},
+			Value:   "config.json",
+			Usage:   "location of config file",
 		},
-		cli.StringFlag{
-			Name:  "log",
-			Value: "",
-			Usage: "file to save logs",
+		&cli.StringFlag{
+			Name:    "log",
+			Aliases: []string{"l"},
+			Value:   "",
+			Usage:   "file to save logs",
 		},
 	}
 
-	app.Action = func(c *cli.Context) {
+	app.Action = func(c *cli.Context) error {
 
 		if fileExists(c.String("config")) {
 
@@ -70,7 +72,7 @@ func main() {
 		} else {
 			println("Config file not present at the given location: ", c.String("config"), "\nPlease give correct file location using --config parameter")
 		}
-
+		return nil
 	}
 
 	//Run as cli app
